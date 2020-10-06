@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Lab1-2018" default="test">
+<project name="lab-introduction-solved" default="test">
 
 
   <property name="main.build.dir" value="out/production"/>
   <property name="main.src.dir" value="src"/>
   <property name="test.build.dir" value="out/test"/>
   <property name="test.src.dir" value="test"/>
+
+  <condition property="have.tests">
+    <or>
+      <available file="${test.src.dir}"/>
+    </or>
+  </condition>
 
   <path id="classpath.test">
     <pathelement location="lib/junit-4.12.jar"/>
@@ -25,16 +31,20 @@
     </javac>
   </target>
 
-  <target name="test" depends="test-compile">
-    <junit showoutput="true" fork="true">
+  <target name="testrun" depends="test-compile">
+    <junit fork="true" errorproperty="tests.failed" failureproperty="tests.failed">
       <classpath>
         <path refid="classpath.test"/>
         <pathelement location="${test.build.dir}"/>
       </classpath>
-      <formatter type="brief" usefile="false" />
+      <formatter type="brief" usefile="false"/>
       <batchtest>
-        <fileset dir="${test.src.dir}" includes="**/*Test.java" />
+        <fileset dir="${test.src.dir}" includes="**/*Test.java"/>
       </batchtest>
     </junit>
+  </target>
+
+  <target depends="testrun" if="have.tests" name="test">
+    <fail if="tests.failed">Some tests failed; see details above.</fail>
   </target>
 </project>
